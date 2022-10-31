@@ -93,7 +93,13 @@ namespace Graphics_Chart_
         double GetLnX(double x,int n)
         {
             double sum = 0;
-            List<double> points = GetInterpollationPoints(n,0,1.5);
+            List<double> points;
+            if (checkBox1.Checked)
+                 points = GetChebyshevInterpolatedPoints(n);
+            else
+            {
+                points = GetInterpollationPoints(n,0,1.5);
+            }
             for (int i = 0; i <= n; i++)
             {
                 double prod = 1;
@@ -153,7 +159,7 @@ namespace Graphics_Chart_
             double x = 0;
             for (int i= 0; i< n; i++)
             {
-                maxErr = Math.Max(maxErr, Math.Abs(GetLnX(x) - getFx(x)));
+                maxErr = Math.Max(maxErr, Math.Abs(GetLnX(x,x_Fx.Count) - getFx(x)));
                 x += h;
             }
             return maxErr;
@@ -164,8 +170,8 @@ namespace Graphics_Chart_
             Series mySeriesOfPoint = new Series("err : n");
             mySeriesOfPoint.ChartType = SeriesChartType.Line;
             mySeriesOfPoint.ChartArea = "Math functions";
-
-            for (int i = 2; i < 44; i++)
+            int n = (int)numericUpDown1.Value;
+            for (int i = 2; i < n; i++)
             {
                 InterpolatedPointsChanger(i);
                  if(i%5 !=0)
@@ -200,9 +206,20 @@ namespace Graphics_Chart_
         {
             double h = 1.5/n;
             x_Fx.Clear();
-            for (double i = 0; i <= 1.5; i += h)
+            if (checkBox1.Checked)
             {
-                x_Fx.Add(i, getFx(i));
+                List<double> points = GetChebyshevInterpolatedPoints(n);
+                for (int i = 0; i<points.Count; i++)
+                {
+                    x_Fx.Add(points[i], getFx(points[i]));
+                }
+            }
+            else
+            {
+                for (double i = 0; i <= 1.5; i += h)
+                {
+                    x_Fx.Add(i, getFx(i));
+                }
             }
         }
 
